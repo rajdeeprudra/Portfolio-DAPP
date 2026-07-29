@@ -23,12 +23,26 @@ export function App() {
                     <Topbar />
                     <Portfolio />
                     <Send />
+                    <br /><br /><br /><br /><br />
+                    <Faucet/>
                 </WalletModalProvider>
             </WalletProvider>
         </ConnectionProvider>
   );
 }
 
+function Faucet(){
+  const {connection}  = useConnection();
+  const {publicKey, sendTransaction} = useWallet();
+
+  return <div>
+    <input id='address' type="text" placeholder='Wallet Address'/>
+    <input id='amount' type="text" placeholder='Amount' />
+    <button onClick={()=>{
+      connection.requestAirdrop(new PublicKey(document.getElementById("address")!.value),document.getElementById("amount")!.value)
+    }}>Request Airdrop</button>
+  </div>
+}
 function Topbar() {
 
   const {publicKey} = useWallet();
