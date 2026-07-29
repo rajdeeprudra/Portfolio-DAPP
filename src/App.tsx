@@ -7,7 +7,7 @@ import {
     WalletDisconnectButton,
     WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
-import { clusterApiUrl } from '@solana/web3.js';
+import { clusterApiUrl, PublicKey, SystemProgram, Transaction} from '@solana/web3.js';
 
 // Default styles that can be overridden by your app
 import '@solana/wallet-adapter-react-ui/styles.css';
@@ -22,6 +22,7 @@ export function App() {
                 <WalletModalProvider>
                     <Topbar />
                     <Portfolio />
+                    <Send />
                 </WalletModalProvider>
             </WalletProvider>
         </ConnectionProvider>
@@ -44,7 +45,7 @@ function Portfolio(){
   const [balance, setBalance] = useState<null | number>(null);
   useEffect(()=>{
     if(publicKey){
-      alert("hbi");
+      
     
     connection.getBalance(publicKey)
     .then(b=> setBalance(b));
@@ -55,6 +56,35 @@ function Portfolio(){
     {publicKey?.toString()}<br/>
     SOL Balance - 
     {balance}
+  </div>
+}
+
+function Send(){
+  const { publicKey, sendTransaction } = useWallet();
+  const { connection } = useConnection();
+
+  return <div>
+    <br />
+    Send Crypto
+    <br />
+    <br />
+    <input id="address" type="text" placeholder='Wallet Address' /> <br /> <br />
+    <input id="amount" type="text" placeholder='Amount'/>
+    <br />
+    <br />
+    <button onClick={async ()=>{
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: publicKey!,
+          toPubkey: new PublicKey(document.getElementById("address")!.value),
+          lamports: document.getElementById("amount").value*1000_000_000
+        })
+      );
+        
+    
+
+      await sendTransaction(transaction,connection);
+    }}>Send SOL</button>
   </div>
 }
 
